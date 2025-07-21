@@ -12,20 +12,17 @@ Date: 2024
 
 import json
 import os
-import pickle
 import sys
 import time
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict
 
-import joblib
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-from plotly.subplots import make_subplots
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -166,7 +163,7 @@ class FraudDetectionMonitor:
                     st.write(f"Model Type: {model_info.get('model_type', 'Unknown')}")
                 else:
                     st.warning("⚠️ Model not loaded")
-            except:
+            except Exception:
                 st.error("❌ Unable to access model information")
 
     def setup_sidebar(self):
@@ -285,7 +282,7 @@ class FraudDetectionMonitor:
                         status_text.text(
                             f"Prediction {i+1}: {result['prediction_label']} (Confidence: {result['confidence']:.3f})"
                         )
-                    except:
+                    except Exception:
                         status_text.text(f"Prediction {i+1}: Error")
 
                     progress_bar.progress((i + 1) / 10)

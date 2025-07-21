@@ -10,12 +10,11 @@ Author: ML Engineer
 Date: 2024
 """
 
-import json
 import logging
 import os
 import sys
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI, HTTPException
