@@ -1,0 +1,62 @@
+# Core Data Science Libraries
+pandas>=1.5.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Machine Learning Libraries
+scikit-learn>=1.1.0
+xgboost>=1.6.0
+imbalanced-learn>=0.10.0
+
+# Model Interpretability
+shap>=0.41.0
+
+# Jupyter and Development
+jupyter>=1.0.0
+ipykernel>=6.0.0
+nbconvert>=7.0.0
+
+# Model Persistence and Utilities
+joblib>=1.2.0
+psutil>=5.9.0
+
+# Data Access
+kagglehub>=0.3.0
+
+# Optional: Interactive Visualizations (for enhanced plots)
+plotly>=5.0.0
+
+# Optional: Additional ML Models (for future enhancements)
+lightgbm>=3.3.0
+catboost>=1.1.0
+
+# Development and Testing (optional)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=5.0.0
+
+# Additional utilities for production deployment
+python-dotenv>=0.19.0
+requests>=2.28.0
+
+# For API development
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+
+# For testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# For code quality
+black>=23.0.0
+flake8>=6.0.0
+isort>=5.12.0
+
+# For monitoring and visualization
+streamlit>=1.28.0
+plotly>=5.17.0
+
+# For model monitoring (optional)
+mlflow>=1.28.0

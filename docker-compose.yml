@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  fraud-detection-api:
+    build: .
+    image: fraud-detection-system:latest
+    container_name: fraud-detection-api
+    ports:
+      - "8005:8000"
+    environment:
+      - MODEL_DIR=/app/data/raw
+      - LOG_LEVEL=INFO
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  fraud-detection-monitor:
+    build: .
+    image: fraud-detection-system:latest
+    container_name: fraud-detection-monitor
+    ports:
+      - "8501:8501"
+    environment:
+      - MODEL_DIR=/app/data/raw
+      - LOG_LEVEL=INFO
+      - API_URL=http://fraud-detection-api:8000
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: ["streamlit", "run", "src/monitoring/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    depends_on:
+      - fraud-detection-api
+
+  # Optional: Add a database for storing predictions
+  # postgres:
+  #   image: postgres:15
+  #   container_name: fraud-detection-db
+  #   environment:
+  #     POSTGRES_DB: fraud_detection
+  #     POSTGRES_USER: fraud_user
+  #     POSTGRES_PASSWORD: fraud_password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data: 
