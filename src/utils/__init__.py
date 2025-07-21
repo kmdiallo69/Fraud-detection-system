@@ -1,1 +1,1 @@
-# Utils package for fraud detection system 
+# Utils package for fraud detection system

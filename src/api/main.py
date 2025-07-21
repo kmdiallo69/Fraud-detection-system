@@ -36,7 +36,7 @@ app = FastAPI(
     description="API for detecting fraudulent credit card transactions using machine learning",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Add CORS middleware
@@ -51,9 +51,11 @@ app.add_middleware(
 # Initialize predictor
 predictor = None
 
+
 # Pydantic models for request/response
 class TransactionData(BaseModel):
     """Model for single transaction data."""
+
     V1: float = Field(..., description="Feature V1")
     V2: float = Field(..., description="Feature V2")
     V3: float = Field(..., description="Feature V3")
@@ -95,8 +97,10 @@ class TransactionData(BaseModel):
     amount_time_interaction: float = Field(..., description="Amount-time interaction")
     Amount_capped: float = Field(..., description="Capped amount")
 
+
 class PredictionResponse(BaseModel):
     """Model for prediction response."""
+
     prediction: int = Field(..., description="Prediction (0=Normal, 1=Fraud)")
     prediction_label: str = Field(..., description="Human-readable prediction")
     confidence: float = Field(..., description="Confidence score")
@@ -104,24 +108,33 @@ class PredictionResponse(BaseModel):
     timestamp: str = Field(..., description="Prediction timestamp")
     model_info: Dict = Field(..., description="Model information")
 
+
 class BatchPredictionRequest(BaseModel):
     """Model for batch prediction request."""
+
     transactions: List[TransactionData] = Field(..., description="List of transactions")
+
 
 class BatchPredictionResponse(BaseModel):
     """Model for batch prediction response."""
-    predictions: List[PredictionResponse] = Field(..., description="List of predictions")
+
+    predictions: List[PredictionResponse] = Field(
+        ..., description="List of predictions"
+    )
     total_transactions: int = Field(..., description="Total number of transactions")
     fraud_count: int = Field(..., description="Number of fraud predictions")
     normal_count: int = Field(..., description="Number of normal predictions")
     timestamp: str = Field(..., description="Batch prediction timestamp")
 
+
 class HealthResponse(BaseModel):
     """Model for health check response."""
+
     status: str = Field(..., description="Service status")
     model_loaded: bool = Field(..., description="Whether model is loaded")
     model_info: Dict = Field(..., description="Model information")
     timestamp: str = Field(..., description="Health check timestamp")
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -135,6 +148,7 @@ async def startup_event():
         logger.error(f"❌ Failed to load model: {e}")
         raise
 
+
 @app.get("/", response_model=Dict)
 async def root():
     """Root endpoint with API information."""
@@ -144,8 +158,9 @@ async def root():
         "docs": "/docs",
         "health": "/health",
         "predict": "/predict",
-        "batch_predict": "/batch_predict"
+        "batch_predict": "/batch_predict",
     }
+
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -156,138 +171,140 @@ async def health_check():
             status="healthy",
             model_loaded=predictor is not None,
             model_info=model_info,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_single(transaction: TransactionData):
     """
     Make a prediction for a single transaction.
-    
+
     Args:
         transaction: Transaction data
-        
+
     Returns:
         Prediction result
     """
     try:
         if predictor is None:
             raise HTTPException(status_code=503, detail="Model not loaded")
-        
+
         # Convert Pydantic model to dict
         transaction_dict = transaction.dict()
-        
+
         # Make prediction
         result = predictor.predict_single(transaction_dict)
-        
-        if 'error' in result:
-            raise HTTPException(status_code=400, detail=result['error'])
-        
+
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+
         return PredictionResponse(**result)
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Prediction error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/batch_predict", response_model=BatchPredictionResponse)
-async def predict_batch(request: BatchPredictionRequest, background_tasks: BackgroundTasks):
+async def predict_batch(
+    request: BatchPredictionRequest, background_tasks: BackgroundTasks
+):
     """
     Make predictions for multiple transactions.
-    
+
     Args:
         request: Batch prediction request
         background_tasks: Background tasks for saving results
-        
+
     Returns:
         Batch prediction results
     """
     try:
         if predictor is None:
             raise HTTPException(status_code=503, detail="Model not loaded")
-        
+
         # Convert Pydantic models to dicts
         transactions = [t.dict() for t in request.transactions]
-        
+
         # Make predictions
         results = predictor.predict_batch(transactions)
-        
+
         # Filter out errors
-        valid_predictions = [r for r in results if 'error' not in r]
-        errors = [r for r in results if 'error' in r]
-        
+        valid_predictions = [r for r in results if "error" not in r]
+        errors = [r for r in results if "error" in r]
+
         if errors:
             logger.warning(f"Batch prediction had {len(errors)} errors")
-        
+
         # Count predictions
-        fraud_count = sum(1 for p in valid_predictions if p['prediction'] == 1)
-        normal_count = sum(1 for p in valid_predictions if p['prediction'] == 0)
-        
+        fraud_count = sum(1 for p in valid_predictions if p["prediction"] == 1)
+        normal_count = sum(1 for p in valid_predictions if p["prediction"] == 0)
+
         # Save predictions in background
         if valid_predictions:
             background_tasks.add_task(predictor.save_predictions, valid_predictions)
-        
+
         return BatchPredictionResponse(
             predictions=[PredictionResponse(**p) for p in valid_predictions],
             total_transactions=len(transactions),
             fraud_count=fraud_count,
             normal_count=normal_count,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Batch prediction error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/model_info", response_model=Dict)
 async def get_model_info():
     """
     Get information about the loaded model.
-    
+
     Returns:
         Model information
     """
     try:
         if predictor is None:
             raise HTTPException(status_code=503, detail="Model not loaded")
-        
+
         return predictor.get_model_info()
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Model info error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/sample_transaction", response_model=TransactionData)
 async def get_sample_transaction():
     """
     Get a sample transaction for testing.
-    
+
     Returns:
         Sample transaction data
     """
     try:
         from predict import create_sample_transaction
+
         sample = create_sample_transaction()
         return TransactionData(**sample)
-        
+
     except Exception as e:
         logger.error(f"Sample transaction error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 if __name__ == "__main__":
     # Run the API server
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    ) 
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
