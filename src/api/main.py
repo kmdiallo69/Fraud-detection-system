@@ -10,16 +10,17 @@ Author: ML Engineer
 Date: 2024
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+import json
+import logging
+import os
+import sys
+from datetime import datetime
+from typing import Dict, List, Optional
+
+import uvicorn
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional
-import uvicorn
-import sys
-import os
-import json
-from datetime import datetime
-import logging
 
 # Add parent directory to path to import modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

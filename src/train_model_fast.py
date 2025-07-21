@@ -23,55 +23,47 @@ Date: 2024
 # 1. 📥 IMPORT REQUIRED LIBRARIES
 # =============================================================================
 
+import warnings
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
 # Core data manipulation and analysis
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
-import warnings
 
 warnings.filterwarnings("ignore")
 
-# Machine Learning libraries
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.preprocessing import StandardScaler, RobustScaler
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    roc_auc_score,
-    precision_recall_curve,
-    average_precision_score,
-    RocCurveDisplay,
-    f1_score,
-    precision_score,
-    recall_score,
-    accuracy_score,
-)
-from sklearn.ensemble import RandomForestClassifier, IsolationForest
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.neighbors import LocalOutlierFactor
-
-# Advanced ML libraries
-import xgboost as xgb
-from xgboost import XGBClassifier
-from imblearn.over_sampling import SMOTE, ADASYN
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.combine import SMOTEENN
-from imblearn.pipeline import Pipeline as ImbPipeline
-
-# Model interpretability
-import shap
+import gc
+import pickle
+# Performance monitoring
+import time
 
 # Model persistence
 import joblib
-import pickle
-
-# Performance monitoring
-import time
 import psutil
-import gc
+# Model interpretability
+import shap
+# Advanced ML libraries
+import xgboost as xgb
+from imblearn.combine import SMOTEENN
+from imblearn.over_sampling import ADASYN, SMOTE
+from imblearn.pipeline import Pipeline as ImbPipeline
+from imblearn.under_sampling import RandomUnderSampler
+from sklearn.ensemble import IsolationForest, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (RocCurveDisplay, accuracy_score,
+                             average_precision_score, classification_report,
+                             confusion_matrix, f1_score,
+                             precision_recall_curve, precision_score,
+                             recall_score, roc_auc_score)
+# Machine Learning libraries
+from sklearn.model_selection import (GridSearchCV, cross_val_score,
+                                     train_test_split)
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.preprocessing import RobustScaler, StandardScaler
+from sklearn.svm import SVC
+from xgboost import XGBClassifier
 
 # Visualization settings
 plt.style.use("seaborn-v0_8")
