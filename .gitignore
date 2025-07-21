@@ -124,16 +124,16 @@ dmypy.json
 
 # Data files
 *.csv
-*.json
-*.pkl
+#*.json
+#*.pkl
 *.pickle
 *.h5
 *.hdf5
 *.parquet
 
 # Model files (keep only the latest)
-data/raw/*.pkl
-data/processed/*.pkl
+#data/raw/#*.pkl
+#data/processed/#*.pkl
 
 # Logs
 logs/

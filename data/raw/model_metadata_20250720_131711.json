@@ -1,0 +1,14 @@
+{
+  "model_name": "XGBoost",
+  "timestamp": "20250720_131711",
+  "performance_metrics": {
+    "accuracy": 0.9994557775359011,
+    "precision": 0.8316831683168316,
+    "recall": 0.8571428571428571,
+    "f1": 0.8442211055276382,
+    "auc": 0.9797493015917678,
+    "training_time": 13.237517833709717
+  },
+  "feature_count": 35,
+  "model_type": "XGBClassifier"
+}
