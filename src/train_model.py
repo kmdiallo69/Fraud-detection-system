@@ -28,6 +28,7 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 # Core data manipulation and analysis
 import pandas as pd
 import seaborn as sns
@@ -36,14 +37,17 @@ warnings.filterwarnings("ignore")
 
 import gc
 import pickle
+
 # Performance monitoring
 import time
 
 # Model persistence
 import joblib
 import psutil
+
 # Model interpretability
 import shap
+
 # Advanced ML libraries
 import xgboost as xgb
 from imblearn.combine import SMOTEENN
@@ -52,14 +56,21 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (RocCurveDisplay, accuracy_score,
-                             average_precision_score, classification_report,
-                             confusion_matrix, f1_score,
-                             precision_recall_curve, precision_score,
-                             recall_score, roc_auc_score)
+from sklearn.metrics import (
+    RocCurveDisplay,
+    accuracy_score,
+    average_precision_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_recall_curve,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
+
 # Machine Learning libraries
-from sklearn.model_selection import (GridSearchCV, cross_val_score,
-                                     train_test_split)
+from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.svm import SVC
