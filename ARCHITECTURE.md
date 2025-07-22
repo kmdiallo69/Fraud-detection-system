@@ -187,16 +187,16 @@ Input Data → Feature Preprocessing → Model Inference → Post-processing →
 ### 2. Inference Pipeline
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │───▶│   FastAPI   │───▶│ Prediction  │───▶│   Model     │
-│  Request    │    │   Server    │    │  Service    │    │   Cache     │
-└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
-                                                              │
-                                                              ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │◀───│   FastAPI   │◀───│ Prediction  │◀───│   Model     │
-│  Response   │    │   Server    │    │  Results    │    │  Inference  │
-└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+┌─────────────┐    ┌────────────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Client    │───▶│   API (9000→8000) │───▶│ Prediction  │───▶│   Model     │
+│  Request    │    │   Server          │    │  Service    │    │   Cache     │
+└─────────────┘    └────────────────────┘    └─────────────┘    └─────────────┘
+                                                             │
+                                                             ▼
+┌─────────────┐    ┌────────────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Client    │◀───│   API (9000→8000) │◀───│ Prediction  │◀───│   Model     │
+│  Response   │    │   Server          │    │  Results    │    │  Inference  │
+└─────────────┘    └────────────────────┘    └─────────────┘    └─────────────┘
 ```
 
 ### 3. Monitoring Pipeline
@@ -341,7 +341,7 @@ services:
   fraud-detection-api:
     image: fraud-detection-api:latest
     ports:
-      - "8000:8000"
+      - "9000:8000"  # External 9000 → Internal 8000
     environment:
       - MODEL_DIR=/app/data/raw
     volumes:
@@ -355,18 +355,18 @@ services:
   fraud-detection-dashboard:
     image: fraud-detection-dashboard:latest
     ports:
-      - "8501:8501"
+      - "8601:8501"  # External 8601 → Internal 8501
     environment:
       - API_URL=http://fraud-detection-api:8000
     depends_on:
       - fraud-detection-api
 ```
 
-#### Container Benefits
-- **Isolation**: Process and dependency isolation
-- **Portability**: Run anywhere Docker is available
-- **Scalability**: Easy horizontal scaling
-- **Versioning**: Immutable deployments
+#### Port Policy
+- **API Service**: Exposed externally on port **9000** (internally 8000 in container)
+- **Dashboard**: Exposed externally on port **8601** (internally 8501 in container)
+- **No use of 8000/8080** for external access to avoid common port conflicts
+- **All internal service-to-service communication** uses container-internal ports (8000 for API, 8501 for dashboard)
 
 ### 2. Orchestration Strategy
 
@@ -432,6 +432,9 @@ jobs:
 - **Performance Profiling**: Bottleneck identification
 - **Error Tracking**: Exception monitoring
 - **User Journey**: End-to-end request tracking
+
+#### Dashboard Access
+- **Dashboard**: Exposed externally on port **8601** (internally 8501)
 
 ### 2. Alerting Strategy
 
@@ -535,5 +538,5 @@ jobs:
 ---
 
 **Last Updated**: July 20, 2024  
-**Version**: 1.0.0  
+**Version**: 1.1.0  
 **Status**: Production Ready

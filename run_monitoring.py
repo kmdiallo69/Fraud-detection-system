@@ -41,13 +41,13 @@ def main():
         return
     
     print("🚀 Launching Fraud Detection Monitoring Dashboard...")
-    print("📊 Dashboard will be available at: http://localhost:8501")
+    print("📊 Dashboard will be available at: http://localhost:8601")
     print("🔄 Press Ctrl+C to stop the server")
     
     # Run streamlit
     subprocess.run([
         sys.executable, "-m", "streamlit", "run", app_path,
-        "--server.port", "8501",
+        "--server.port", "8601",
         "--server.address", "0.0.0.0",
         "--browser.gatherUsageStats", "false"
     ])

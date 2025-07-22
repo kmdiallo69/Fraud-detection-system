@@ -94,10 +94,15 @@ cd src/api && python main.py
 python run_monitoring.py
 ```
 
+### Note on Ports
+- **API**: Exposed on port 9000 (internal 8000 in Docker)
+- **Dashboard**: Exposed on port 8601 (internal 8501 in Docker)
+- **8000/8080 are not used externally** to avoid common conflicts on shared systems.
+
 ### 4. Access Services
-- **API**: http://localhost:8000
-- **Dashboard**: http://localhost:8501
-- **API Docs**: http://localhost:8000/docs
+- **API**: http://localhost:9000
+- **Dashboard**: http://localhost:8601
+- **API Docs**: http://localhost:9000/docs
 
 ## 📦 Installation
 
@@ -142,7 +147,7 @@ docker-compose up -d
 
 # Or build single container
 docker build -t fraud-detection-system .
-docker run -p 8000:8000 fraud-detection-system
+docker run -p 9000:8000 fraud-detection-system
 ```
 
 ## 🔧 Usage
@@ -265,7 +270,7 @@ GET /model/info
 import requests
 
 # Single prediction
-response = requests.post("http://localhost:8000/predict", json={
+response = requests.post("http://localhost:9000/predict", json={
     "amount": 100.50,
     "oldbalanceOrg": 1000.00,
     "newbalanceOrig": 899.50,
@@ -279,7 +284,7 @@ print(f"Fraud: {result['is_fraud']}, Confidence: {result['confidence']}")
 
 #### cURL
 ```bash
-curl -X POST "http://localhost:8000/predict" \
+curl -X POST "http://localhost:9000/predict" \
      -H "Content-Type: application/json" \
      -d '{
        "amount": 100.50,
@@ -331,7 +336,7 @@ The Streamlit dashboard provides real-time monitoring with the following feature
 # Start dashboard
 python run_monitoring.py
 
-# Access at: http://localhost:8501
+# Access at: http://localhost:8601
 ```
 
 ## 🐳 Docker Deployment
@@ -354,15 +359,15 @@ docker-compose down
 docker build -t fraud-detection-api .
 
 # Run API
-docker run -p 8000:8000 fraud-detection-api
+docker run -p 9000:8000 fraud-detection-api
 
 # Run dashboard (separate container)
-docker run -p 8501:8501 -v $(pwd)/src/monitoring:/app fraud-detection-dashboard
+docker run -p 8601:8501 -v $(pwd)/src/monitoring:/app fraud-detection-dashboard
 ```
 
 ### Docker Services
-- **API**: Port 8000
-- **Dashboard**: Port 8501
+- **API**: Port 9000 (internal 8000)
+- **Dashboard**: Port 8601 (internal 8501)
 - **Health Checks**: Automatic monitoring
 - **Logging**: Structured logging
 
@@ -389,10 +394,10 @@ python -m pytest tests/ --cov=src/ --cov-report=html
 ### Manual Testing
 ```bash
 # Test API health
-curl http://localhost:8000/health
+curl http://localhost:9000/health
 
 # Test prediction endpoint
-curl -X POST http://localhost:8000/predict \
+curl -X POST http://localhost:9000/predict \
      -H "Content-Type: application/json" \
      -d '{"amount": 100.50, "type": "CASH_OUT"}'
 ```
@@ -400,93 +405,3 @@ curl -X POST http://localhost:8000/predict \
 ## 📁 Project Structure
 
 ```
-fraud-detection-system/
-├── .github/workflows/          # CI/CD pipelines
-├── data/                       # Data and models
-│   ├── raw/                    # Raw data and trained models
-│   └── processed/              # Processed data
-├── notebooks/                  # Jupyter notebooks
-├── src/                        # Source code
-│   ├── api/                    # FastAPI application
-│   ├── monitoring/             # Streamlit dashboard
-│   ├── utils/                  # Utility modules
-│   ├── data_preprocessing.py   # Data pipeline
-│   ├── predict.py              # Prediction module
-│   └── train_model*.py         # Training scripts
-├── tests/                      # Unit tests
-├── venv/                       # Virtual environment
-├── docker-compose.yml          # Multi-service deployment
-├── Dockerfile                  # Container configuration
-├── requirements.txt            # Python dependencies
-└── run_monitoring.py           # Dashboard launcher
-```
-
-For detailed structure, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
-
-## 🔄 CI/CD Pipeline
-
-### GitHub Actions Workflows
-
-1. **Test Workflow** (`.github/workflows/test.yml`)
-   - Runs on every push
-   - Executes unit tests
-   - Checks code quality
-   - Reports test coverage
-
-2. **Build Workflow** (`.github/workflows/build.yml`)
-   - Runs on releases
-   - Builds Docker images
-   - Pushes to GitHub Container Registry
-   - Deploys to staging
-
-### Automated Tasks
-- ✅ Code linting and formatting
-- ✅ Unit test execution
-- ✅ Security scanning
-- ✅ Docker image building
-- ✅ Container registry push
-
-## 🤝 Contributing
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-### Code Standards
-- Follow PEP 8 style guide
-- Add docstrings to functions
-- Include type hints
-- Write unit tests
-- Update documentation
-
-### Testing Guidelines
-- Maintain >90% test coverage
-- Test all new endpoints
-- Validate model predictions
-- Check error handling
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Kaggle for the fraud detection dataset
-- FastAPI for the excellent web framework
-- Streamlit for the interactive dashboard
-- XGBoost for the powerful ML algorithm
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- **Documentation**: [Wiki](https://github.com/your-repo/wiki)
-- **Email**: support@your-domain.com
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: July 20, 2024  
-**Status**: Production Ready 🚀 

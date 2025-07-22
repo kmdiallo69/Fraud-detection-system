@@ -6,7 +6,7 @@ services:
     image: fraud-detection-system:latest
     container_name: fraud-detection-api
     ports:
-      - "8005:8000"
+      - "9000:8000"
     environment:
       - MODEL_DIR=/app/data/raw
       - LOG_LEVEL=INFO
@@ -28,7 +28,7 @@ services:
     image: fraud-detection-system:latest
     container_name: fraud-detection-monitor
     ports:
-      - "8501:8501"
+      - "8601:8501"
     environment:
       - MODEL_DIR=/app/data/raw
       - LOG_LEVEL=INFO
